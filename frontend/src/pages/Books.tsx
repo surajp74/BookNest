@@ -1,0 +1,79 @@
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { Filter, Search, ShoppingBag, Star } from "lucide-react";
+import { addToCart, getBooks, getCategories } from "../api";
+import type { Book } from "../types";
+
+export default function Books({ onCartChanged }: { onCartChanged: () => void }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [books, setBooks] = useState<Book[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [query, setQuery] = useState(searchParams.get("search") || "");
+  const [category, setCategory] = useState(searchParams.get("category") || "");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([getBooks(), getCategories()]).then(([bookData, categoryData]) => {
+      setBooks(bookData);
+      setCategories(categoryData);
+      setLoading(false);
+    });
+  }, []);
+
+  const filtered = books.filter((book) => {
+    const matchesSearch =
+      !query ||
+      book.title.toLowerCase().includes(query.toLowerCase()) ||
+      book.author.toLowerCase().includes(query.toLowerCase());
+    const matchesCategory = !category || book.category === category;
+    return matchesSearch && matchesCategory;
+  });
+
+  const search = () => setSearchParams({ ...(query ? { search: query } : {}), ...(category ? { category } : {}) });
+
+  const add = async (bookId: string) => {
+    await addToCart(bookId);
+    onCartChanged();
+  };
+
+  return (
+    <div className="page">
+      <div className="page-header">
+        <span className="eyebrow">THE COLLECTION</span>
+        <h1>Books for every kind of reader.</h1>
+        <p>Search our curated collection and discover your next favorite.</p>
+      </div>
+
+      <div className="catalog-toolbar">
+        <div className="search-input">
+          <Search size={18} />
+          <input value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} placeholder="Search title or author" />
+        </div>
+        <select value={category} onChange={(e) => { setCategory(e.target.value); setSearchParams(e.target.value ? { category: e.target.value } : {}); }}>
+          <option value="">All categories</option>
+          {categories.map((item) => <option key={item}>{item}</option>)}
+        </select>
+        <button className="filter-button" onClick={search}><Filter size={17} /> Apply</button>
+      </div>
+
+      {loading ? <div className="loading">Loading collection...</div> : (
+        <div className="catalog-grid">
+          {filtered.map((book) => (
+            <article className="catalog-card" key={book.id}>
+              <Link to={`/books/${book.id}`} className="catalog-cover"><img src={book.cover} alt={book.title} /></Link>
+              <div className="catalog-details">
+                <span className="category-label">{book.category}</span>
+                <Link to={`/books/${book.id}`}><h3>{book.title}</h3></Link>
+                <p>{book.author}</p>
+                <div className="catalog-rating"><Star size={14} fill="currentColor" /> {book.rating} <span>·</span> {book.pages} pages</div>
+                <div className="catalog-bottom"><strong>₹{book.price}</strong><button className="small-cart" onClick={() => add(book.id)}><ShoppingBag size={16} /> Add</button></div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+
+      {!loading && filtered.length === 0 && <div className="empty-state"><h3>No books found</h3><p>Try another title, author or category.</p></div>}
+    </div>
+  );
+}

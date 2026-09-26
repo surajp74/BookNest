@@ -1,0 +1,39 @@
+import { FormEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "../api";
+
+export default function Login() {
+  const [email, setEmail] = useState("demo@booknest.local");
+  const [password, setPassword] = useState("demo123");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      await login(email, password);
+      localStorage.setItem("booknest-user", email);
+      navigate("/orders");
+    } catch {
+      setError("Invalid demo credentials.");
+    }
+  };
+
+  return (
+    <div className="auth-page">
+      <div className="auth-card">
+        <span className="eyebrow">WELCOME BACK</span>
+        <h1>Sign in to BookNest.</h1>
+        <p>Use the demo account or try the registration flow.</p>
+        <form onSubmit={submit}>
+          <label>Email<input type="email" value={email} onChange={e => setEmail(e.target.value)} required /></label>
+          <label>Password<input type="password" value={password} onChange={e => setPassword(e.target.value)} required /></label>
+          {error && <div className="form-error">{error}</div>}
+          <button className="button primary full" type="submit">Sign in</button>
+        </form>
+        <small>Demo: demo@booknest.local / demo123</small>
+        <Link to="/books" className="back-link">Continue as guest</Link>
+      </div>
+    </div>
+  );
+}

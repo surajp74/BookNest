@@ -1,0 +1,42 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - api-gateway
+
+  api-gateway:
+    build: ./services/api-gateway
+    ports:
+      - "4000:4000"
+    environment:
+      CATALOG_URL: http://catalog-service:4001
+      CART_URL: http://cart-service:4002
+      ORDER_URL: http://order-service:4003
+      USER_URL: http://user-service:4004
+    depends_on:
+      - catalog-service
+      - cart-service
+      - order-service
+      - user-service
+
+  catalog-service:
+    build: ./services/catalog-service
+    ports:
+      - "4001:4001"
+
+  cart-service:
+    build: ./services/cart-service
+    ports:
+      - "4002:4002"
+
+  order-service:
+    build: ./services/order-service
+    ports:
+      - "4003:4003"
+
+  user-service:
+    build: ./services/user-service
+    ports:
+      - "4004:4004"

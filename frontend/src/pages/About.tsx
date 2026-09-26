@@ -1,0 +1,19 @@
+import { Layers3, Network, Rocket, Shield } from "lucide-react";
+
+export default function About() {
+  return (
+    <div className="page">
+      <div className="page-header">
+        <span className="eyebrow">ABOUT THE PROJECT</span>
+        <h1>Built to learn real-world DevOps.</h1>
+        <p>BookNest is intentionally designed as a small production-style system that can evolve with your Kubernetes and Azure DevOps practice.</p>
+      </div>
+      <div className="about-grid">
+        <div className="about-card"><Layers3 /><h3>Microservices</h3><p>Catalog, cart, order and user responsibilities are separated into independently deployable services.</p></div>
+        <div className="about-card"><Network /><h3>API Gateway</h3><p>The frontend communicates with one gateway, giving you a clean place to practice routing and traffic control.</p></div>
+        <div className="about-card"><Rocket /><h3>CI/CD ready</h3><p>Each service has its own package and can later become its own container image and Kubernetes Deployment.</p></div>
+        <div className="about-card"><Shield /><h3>Security ready</h3><p>The architecture leaves room for Secrets, NetworkPolicies, ingress controls, TLS and Azure networking.</p></div>
+      </div>
+    </div>
+  );
+}
