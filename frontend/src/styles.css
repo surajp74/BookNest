@@ -79,6 +79,13 @@ button{
   white-space:nowrap
 }
 
+.site-logo{
+  width:150px;
+  height:54px;
+  object-fit:contain;
+  display:block;
+}
+
 .brand-icon{
   background:var(--accent);
   color:#fff;
@@ -1358,4 +1365,9 @@ button{
   .footer{
     padding:45px 7%
   }
+}
+
+.site-logo{
+  width:125px;
+  height:48px;
 }

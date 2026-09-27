@@ -13,7 +13,6 @@ import {
 } from "react-router-dom";
 
 import {
-  BookOpen,
   Menu,
   Search,
   ShoppingBag,
@@ -131,22 +130,23 @@ export default function App() {
 
       <header className="site-header">
 
+        {/* BookNest Logo */}
         <Link
           className="brand"
           to="/"
           onClick={() =>
             setMobileOpen(false)
           }
+          aria-label="BookNest Home"
         >
-          <span className="brand-icon">
-            <BookOpen size={20} />
-          </span>
-
-          <span>
-            BookNest
-          </span>
+          <img
+            className="site-logo"
+            src="/logo.jpeg"
+            alt="BookNest"
+          />
         </Link>
 
+        {/* Header Search */}
         <form
           className="header-search"
           onSubmit={handleHeaderSearch}
@@ -337,7 +337,7 @@ export default function App() {
           <div>
             <div className="brand footer-brand">
               <span className="brand-icon">
-                <BookOpen size={18} />
+                📖
               </span>
 
               BookNest
@@ -407,7 +407,7 @@ export default function App() {
         </div>
 
         <div className="footer-bottom">
-          © 2026 BookNest · Local learning project
+          © 2026 BookNest · Where stories nest and readers rest
         </div>
 
       </footer>

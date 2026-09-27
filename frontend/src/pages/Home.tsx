@@ -29,8 +29,6 @@ export default function Home() {
 
         const books = await getBooks();
 
-        // Keep the existing Home page design with 4 books,
-        // but get those books from the backend Catalog Service.
         setFeatured(books.slice(0, 4));
       } catch (err) {
         console.error("Failed to load featured books:", err);
