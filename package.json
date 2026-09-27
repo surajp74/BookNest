@@ -1,13 +1,10 @@
 {
   "name": "booknest",
   "private": true,
-  "version": "1.0.0",
-  "workspaces": [
-    "frontend",
-    "services/*"
-  ],
+  "version": "1.1.0",
+  "workspaces": ["frontend", "services/*"],
   "scripts": {
-    "dev": "concurrently -k -n FRONTEND,GATEWAY,CATALOG,CART,ORDER,USER -c blue,magenta,green,cyan,yellow,white \"npm run dev:frontend\" \"npm run dev:gateway\" \"npm run dev:catalog\" \"npm run dev:cart\" \"npm run dev:order\" \"npm run dev:user\"",
+    "dev": "concurrently -k -n FRONTEND,GATEWAY,CATALOG,CART,ORDER,USER \"npm run dev:frontend\" \"npm run dev:gateway\" \"npm run dev:catalog\" \"npm run dev:cart\" \"npm run dev:order\" \"npm run dev:user\"",
     "dev:frontend": "npm --workspace frontend run dev",
     "dev:gateway": "npm --workspace services/api-gateway run dev",
     "dev:catalog": "npm --workspace services/catalog-service run dev",
@@ -17,7 +14,5 @@
     "build": "npm run build:services && npm --workspace frontend run build",
     "build:services": "npm --workspace services/catalog-service run build && npm --workspace services/cart-service run build && npm --workspace services/order-service run build && npm --workspace services/user-service run build && npm --workspace services/api-gateway run build"
   },
-  "devDependencies": {
-    "concurrently": "^9.1.2"
-  }
+  "devDependencies": {"concurrently": "^9.1.2"}
 }

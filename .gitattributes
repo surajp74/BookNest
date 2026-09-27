@@ -1,13 +1,3 @@
 * text=auto
-*.ts text
-*.tsx text
-*.js text
-*.json text
-*.css text
-*.html text
-*.md text
-*.yml text
-*.yaml text
-*.env text
-Dockerfile text
 *.sh text eol=lf
+Dockerfile text eol=lf

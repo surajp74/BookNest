@@ -1,45 +1,15 @@
-import express from "express";
-import cors from "cors";
-import { createProxyMiddleware } from "http-proxy-middleware";
-
-const app = express();
-const port = Number(process.env.PORT || 4000);
-
-const catalogUrl = process.env.CATALOG_URL || "http://localhost:4001";
-const cartUrl = process.env.CART_URL || "http://localhost:4002";
-const orderUrl = process.env.ORDER_URL || "http://localhost:4003";
-const userUrl = process.env.USER_URL || "http://localhost:4004";
-
-app.use(cors());
-app.use(express.json());
-
-app.get("/api/health", async (_req, res) => {
-  res.json({
-    gateway: "healthy",
-    services: {
-      catalog: catalogUrl,
-      cart: cartUrl,
-      order: orderUrl,
-      user: userUrl
-    },
-    timestamp: new Date().toISOString()
-  });
-});
-
-const proxy = (target: string, route: string) =>
-  createProxyMiddleware({
-    target,
-    changeOrigin: true,
-    pathRewrite: { [`^/api${route}`]: "" },
-    proxyTimeout: 5000
-  });
-
-app.use("/api/books", proxy(catalogUrl, "/books"));
-app.use("/api/categories", proxy(catalogUrl, "/categories"));
-app.use("/api/cart", proxy(cartUrl, "/cart"));
-app.use("/api/orders", proxy(orderUrl, "/orders"));
-app.use("/api/login", proxy(userUrl, "/login"));
-app.use("/api/register", proxy(userUrl, "/register"));
-app.use("/api/users", proxy(userUrl, "/users"));
-
-app.listen(port, () => console.log(`API Gateway running on ${port}`));
+import express,{Request} from 'express';import cors from 'cors';import axios from 'axios';import jwt from 'jsonwebtoken';const app=express();const port=Number(process.env.PORT||4000);const catalog=process.env.CATALOG_URL||'http://localhost:4001';const cart=process.env.CART_URL||'http://localhost:4002';const order=process.env.ORDER_URL||'http://localhost:4003';const user=process.env.USER_URL||'http://localhost:4004';const secret=process.env.JWT_SECRET||'booknest-local-secret';app.use(cors());app.use(express.json());
+type AuthedReq=Request&{userId?:string};function userId(req:AuthedReq){const h=req.headers.authorization;if(!h?.startsWith('Bearer '))return undefined;try{return String((jwt.verify(h.slice(7),secret) as any).sub)}catch{return undefined}}function forward(res:any,e:any,fallback:string){res.status(e.response?.status||502).json({error:e.response?.data?.error||fallback});}
+app.get('/api/health',async(_req,res)=>res.json({status:'ok',service:'api-gateway',routes:{catalog,cart,order,user}}));
+app.get('/api/books',async(req,res)=>{try{const r=await axios.get(`${catalog}/api/books`,{params:req.query});res.json(r.data)}catch(e){forward(res,e,'Could not load books')}});
+app.get('/api/categories',async(_req,res)=>{try{const r=await axios.get(`${catalog}/api/books/categories`);res.json(r.data)}catch(e){forward(res,e,'Could not load categories')}});
+app.get('/api/books/:id',async(req,res)=>{try{const r=await axios.get(`${catalog}/api/books/${req.params.id}`);res.json(r.data)}catch(e){forward(res,e,'Could not load book')}});
+app.get('/api/cart',async(req:AuthedReq,res)=>{try{const r=await axios.get(`${cart}/api/cart`,{headers:{'x-user-id':userId(req)||'demo-user'}});res.json(r.data)}catch(e){forward(res,e,'Could not load cart')}});
+app.post('/api/cart/items',async(req:AuthedReq,res)=>{try{const r=await axios.post(`${cart}/api/cart/items`,req.body,{headers:{'x-user-id':userId(req)||'demo-user'}});res.status(r.status).json(r.data)}catch(e){forward(res,e,'Could not add to cart')}});
+app.patch('/api/cart/items/:bookId',async(req:AuthedReq,res)=>{try{const r=await axios.patch(`${cart}/api/cart/items/${req.params.bookId}`,req.body,{headers:{'x-user-id':userId(req)||'demo-user'}});res.json(r.data)}catch(e){forward(res,e,'Could not update cart')}});
+app.delete('/api/cart/items/:bookId',async(req:AuthedReq,res)=>{try{const r=await axios.delete(`${cart}/api/cart/items/${req.params.bookId}`,{headers:{'x-user-id':userId(req)||'demo-user'}});res.json(r.data)}catch(e){forward(res,e,'Could not remove cart item')}});
+app.delete('/api/cart',async(req:AuthedReq,res)=>{try{const r=await axios.delete(`${cart}/api/cart`,{headers:{'x-user-id':userId(req)||'demo-user'}});res.json(r.data)}catch(e){forward(res,e,'Could not clear cart')}});
+app.post('/api/login',async(req,res)=>{try{const r=await axios.post(`${user}/api/users/login`,req.body);res.json(r.data)}catch(e){forward(res,e,'Login failed')}});app.post('/api/register',async(req,res)=>{try{const r=await axios.post(`${user}/api/users/register`,req.body);res.status(201).json(r.data)}catch(e){forward(res,e,'Registration failed')}});
+app.get('/api/orders',async(req:AuthedReq,res)=>{const id=userId(req);if(!id)return res.status(401).json({error:'Please log in to view orders'});try{const r=await axios.get(`${order}/api/orders/user/${id}`);res.json(r.data)}catch(e){forward(res,e,'Could not load orders')}});
+app.post('/api/orders',async(req:AuthedReq,res)=>{const id=userId(req);if(!id)return res.status(401).json({error:'Please log in to place an order'});try{const r=await axios.post(`${order}/api/orders`,{userId:id,items:req.body?.items});res.status(201).json(r.data)}catch(e){forward(res,e,'Could not place order')}});
+app.listen(port,()=>console.log(`API Gateway running on ${port}`));
