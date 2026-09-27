@@ -1,1 +1,133 @@
-import express from 'express';import cors from 'cors';import axios from 'axios';const app=express();const port=Number(process.env.PORT||4003);const booksUrl=process.env.CATALOG_URL||'http://localhost:4001';app.use(cors());app.use(express.json());type OrderItem={bookId:string;quantity:number;price:number;title:string};type Order={id:string;userId:string;items:OrderItem[];total:number;status:'PLACED'|'PROCESSING'|'SHIPPED';createdAt:string};const orders:Order[]=[];app.get('/health',(_req,res)=>res.json({status:'ok',service:'order-service'}));app.get('/api/orders/user/:userId',(req,res)=>res.json({orders:orders.filter(o=>o.userId===req.params.userId)}));app.get('/api/orders/:id',(req,res)=>{const o=orders.find(x=>x.id===req.params.id);if(!o)return res.status(404).json({error:'Order not found'});res.json({order:o});});app.post('/api/orders',async(req,res)=>{const userId=String(req.body?.userId||'');const items=req.body?.items;if(!userId||!Array.isArray(items)||items.length===0)return res.status(400).json({error:'userId and a non-empty items array are required'});const confirmed:OrderItem[]=[];let total=0;try{for(const item of items){const qty=Number(item.quantity??item.qty??1);const r=await axios.post(`${booksUrl}/api/books/${item.bookId}/reserve`,{qty});const b=r.data.book;confirmed.push({bookId:item.bookId,quantity:qty,price:r.data.unitPrice,title:b.title});total+=r.data.unitPrice*qty;}}catch(e:any){return res.status(e.response?.status||502).json({error:e.response?.data?.error||'Could not reach catalog service'});}const order:Order={id:`ORD-${Date.now().toString().slice(-8)}`,userId,items:confirmed,total,status:'PLACED',createdAt:new Date().toISOString()};orders.unshift(order);res.status(201).json({order});});app.listen(port,()=>console.log(`Order service running on ${port}`));
+import express from "express";
+import cors from "cors";
+import axios from "axios";
+
+const app = express();
+
+const port = Number(process.env.PORT || 4003);
+const booksUrl =
+  process.env.CATALOG_URL || "http://localhost:4001";
+
+app.use(cors());
+app.use(express.json());
+
+type OrderItem = {
+  bookId: string;
+  quantity: number;
+  price: number;
+  title: string;
+};
+
+type Order = {
+  id: string;
+  userId: string;
+  items: OrderItem[];
+  total: number;
+  status: "PLACED" | "PROCESSING" | "SHIPPED";
+  createdAt: string;
+};
+
+const orders: Order[] = [];
+
+app.get("/health", (_req, res) =>
+  res.json({
+    status: "ok",
+    service: "order-service"
+  })
+);
+
+app.get("/api/orders/user/:userId", (req, res) =>
+  res.json({
+    orders: orders.filter(
+      (o) => o.userId === req.params.userId
+    )
+  })
+);
+
+app.get("/api/orders/:id", (req, res) => {
+  const o = orders.find(
+    (x) => x.id === req.params.id
+  );
+
+  if (!o) {
+    return res
+      .status(404)
+      .json({
+        error: "Order not found"
+      });
+  }
+
+  res.json({ order: o });
+});
+
+app.post("/api/orders", async (req, res) => {
+  const userId = String(req.body?.userId || "");
+  const items = req.body?.items;
+
+  if (
+    !userId ||
+    !Array.isArray(items) ||
+    items.length === 0
+  ) {
+    return res
+      .status(400)
+      .json({
+        error:
+          "userId and a non-empty items array are required"
+      });
+  }
+
+  const confirmed: OrderItem[] = [];
+  let total = 0;
+
+  try {
+    for (const item of items) {
+      const qty = Number(
+        item.quantity ?? item.qty ?? 1
+      );
+
+      const r = await axios.post(
+        `${booksUrl}/api/books/${item.bookId}/reserve`,
+        { qty }
+      );
+
+      const b = r.data.book;
+
+      confirmed.push({
+        bookId: item.bookId,
+        quantity: qty,
+        price: r.data.unitPrice,
+        title: b.title
+      });
+
+      total += r.data.unitPrice * qty;
+    }
+  } catch (e: any) {
+    return res
+      .status(e.response?.status || 502)
+      .json({
+        error:
+          e.response?.data?.error ||
+          "Could not reach catalog service"
+      });
+  }
+
+  const order: Order = {
+    id: `ORD-${Date.now()
+      .toString()
+      .slice(-8)}`,
+    userId,
+    items: confirmed,
+    total,
+    status: "PLACED",
+    createdAt: new Date().toISOString()
+  };
+
+  orders.unshift(order);
+
+  res.status(201).json({ order });
+});
+
+app.listen(port, () =>
+  console.log(`Order service running on ${port}`)
+);
