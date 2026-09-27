@@ -13,10 +13,10 @@ import {
 } from "react-router-dom";
 
 import {
-  Menu,
   Search,
   ShoppingBag,
   User,
+  Menu,
   X
 } from "lucide-react";
 
@@ -117,6 +117,7 @@ export default function App() {
   return (
     <div className="app-shell">
 
+      {/* Top strip */}
       <div className="top-strip">
         <span>
           Free shipping on orders over ₹999
@@ -128,9 +129,9 @@ export default function App() {
         </span>
       </div>
 
+      {/* Header */}
       <header className="site-header">
 
-        {/* BookNest Logo */}
         <Link
           className="brand"
           to="/"
@@ -146,7 +147,7 @@ export default function App() {
           />
         </Link>
 
-        {/* Header Search */}
+        {/* Search */}
         <form
           className="header-search"
           onSubmit={handleHeaderSearch}
@@ -166,6 +167,7 @@ export default function App() {
           />
         </form>
 
+        {/* Navigation */}
         <nav
           className={`main-nav ${
             mobileOpen ? "open" : ""
@@ -212,6 +214,7 @@ export default function App() {
           </NavLink>
         </nav>
 
+        {/* Header actions */}
         <div className="header-actions">
 
           <Link
@@ -255,6 +258,7 @@ export default function App() {
         </div>
       </header>
 
+      {/* Main application */}
       <main>
         <Routes>
 
@@ -330,26 +334,37 @@ export default function App() {
         </Routes>
       </main>
 
+      {/* =====================================================
+          BOOKSTORE FOOTER
+          ===================================================== */}
       <footer className="footer">
 
         <div className="footer-grid">
 
-          <div>
-            <div className="brand footer-brand">
-              <span className="brand-icon">
-                📖
-              </span>
+          {/* Brand */}
+          <div className="footer-about">
 
-              BookNest
-            </div>
+            <Link
+              to="/"
+              className="footer-logo-link"
+            >
+              <img
+                src="/booknest-logo.png"
+                className="footer-logo"
+                alt="BookNest"
+              />
+            </Link>
 
             <p>
-              A learning-focused bookstore
-              application built with React,
-              TypeScript and Node.js microservices.
+              A cozy corner for readers to discover
+              stories, ideas and books worth keeping.
+              Explore our collection and find your
+              next great read.
             </p>
+
           </div>
 
+          {/* Explore */}
           <div>
             <h4>
               Explore
@@ -363,51 +378,74 @@ export default function App() {
               Categories
             </Link>
 
-            <Link to="/orders">
-              Orders
+            <Link to="/books?category=Fiction">
+              Fiction
+            </Link>
+
+            <Link to="/books?category=Technology">
+              Technology
             </Link>
           </div>
 
+          {/* Customer */}
           <div>
             <h4>
-              Help
+              Your BookNest
             </h4>
-
-            <Link to="/about">
-              About BookNest
-            </Link>
 
             <Link to="/login">
               My Account
             </Link>
 
-            <span>
-              support@booknest.local
-            </span>
+            <Link to="/cart">
+              Shopping Cart
+            </Link>
+
+            <Link to="/orders">
+              My Orders
+            </Link>
+
+            <Link to="/about">
+              About Us
+            </Link>
           </div>
 
+          {/* Reading */}
           <div>
             <h4>
-              Built for DevOps
+              Discover & Read
             </h4>
 
             <span>
-              Docker-ready
+              Find your next story
             </span>
 
             <span>
-              Kubernetes-ready
+              Explore new authors
             </span>
 
             <span>
-              CI/CD-ready
+              Learn something new
+            </span>
+
+            <span>
+              Make time for reading
             </span>
           </div>
 
         </div>
 
         <div className="footer-bottom">
-          © 2026 BookNest · Where stories nest and readers rest
+
+          <span>
+            © 2026 BookNest · Your Cozy Corner
+            for Stories
+          </span>
+
+          <span>
+            Made for readers, one page at a time.
+          </span>
+
         </div>
 
       </footer>

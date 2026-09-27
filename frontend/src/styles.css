@@ -577,10 +577,43 @@ main,
   transform:rotate(-8deg)
 }
 
+/* =========================================================
+   BOOKNEST FOOTER
+   ========================================================= */
+
 .footer{
   background:#19231f;
   color:#dce2df;
-  padding:55px 7% 22px
+  padding:58px 7% 22px;
+  position:relative;
+  overflow:hidden;
+}
+
+/*
+  Very subtle decorative book/page lines in the footer.
+*/
+.footer::before{
+  content:"";
+  position:absolute;
+  width:420px;
+  height:420px;
+  right:-180px;
+  top:-210px;
+  border:1px solid rgba(255,255,255,.035);
+  border-radius:50%;
+  pointer-events:none;
+}
+
+.footer::after{
+  content:"";
+  position:absolute;
+  width:300px;
+  height:300px;
+  right:-120px;
+  top:-150px;
+  border:1px solid rgba(255,255,255,.025);
+  border-radius:50%;
+  pointer-events:none;
 }
 
 .footer-grid{
@@ -588,42 +621,100 @@ main,
   margin:auto;
   display:grid;
   grid-template-columns:2fr 1fr 1fr 1fr;
-  gap:40px
+  gap:45px;
+  position:relative;
+  z-index:1;
 }
 
-.footer-brand{
-  color:#fff
+/* Footer brand */
+
+.footer-about{
+  max-width:360px;
 }
 
-.footer p{
+.footer-logo-link{
+  display:inline-flex;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.footer-logo{
+  width:210px;
+  height:62px;
+  object-fit:contain;
+  object-position:left center;
+  display:block;
+
+  /*
+    The logo is designed for a light background.
+    Make it elegant and readable on the dark footer.
+  */
+  filter:brightness(0) invert(1);
+  opacity:.92;
+}
+
+.footer-about p{
   color:#9ba6a1;
   font-size:12px;
-  line-height:1.7;
-  max-width:350px
+  line-height:1.8;
+  max-width:340px;
+  margin:5px 0 0;
 }
+
+/* Footer headings */
 
 .footer h4{
-  font-size:12px;
+  font-size:11px;
   text-transform:uppercase;
-  letter-spacing:.12em;
-  color:#fff
+  letter-spacing:.15em;
+  color:#fff;
+  margin:7px 0 20px;
 }
 
-.footer-grid a,
+/* Footer links */
+
+.footer-grid a{
+  display:block;
+  color:#9ba6a1;
+  font-size:12px;
+  margin:13px 0;
+  transition:
+    color .2s ease,
+    transform .2s ease;
+}
+
+.footer-grid a:hover{
+  color:#fff;
+  transform:translateX(2px);
+}
+
+/* Footer informational text */
+
 .footer-grid span{
   display:block;
   color:#9ba6a1;
   font-size:12px;
-  margin:12px 0
+  margin:13px 0;
 }
+
+/* Bottom */
 
 .footer-bottom{
   max-width:1150px;
   margin:45px auto 0;
   border-top:1px solid #35403b;
   padding-top:18px;
+
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+
   color:#77837d;
-  font-size:11px
+  font-size:10px;
+  line-height:1.5;
+
+  position:relative;
+  z-index:1;
 }
 
 .page-header{
@@ -1413,11 +1504,27 @@ main,
   }
 
   .footer-grid{
-    grid-template-columns:1fr
+    grid-template-columns:1fr;
+    gap:30px;
   }
 
   .footer{
-    padding:45px 7%
+    padding:45px 7% 20px;
+  }
+
+  .footer-about{
+    max-width:100%;
+  }
+
+  .footer-logo{
+    width:190px;
+    height:58px;
+  }
+
+  .footer-bottom{
+    flex-direction:column;
+    gap:7px;
+    margin-top:35px;
   }
 }
 
