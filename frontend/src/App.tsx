@@ -141,8 +141,8 @@ export default function App() {
         >
           <img
             className="site-logo"
-            src="/logo.jpeg"
-            alt="BookNest"
+            src="/booknest-logo.png"
+            alt="BookNest - Your Cozy Corner for Stories"
           />
         </Link>
 
