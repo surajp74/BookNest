@@ -24,19 +24,19 @@ services:
   catalog-service:
     build: ./services/catalog-service
     ports:
-      - "4001:4001"
+      - "5001:4001"
 
   cart-service:
     build: ./services/cart-service
     ports:
-      - "4002:4002"
+      - "5002:4002"
 
   order-service:
     build: ./services/order-service
     ports:
-      - "4003:4003"
+      - "5003:4003"
 
   user-service:
     build: ./services/user-service
     ports:
-      - "4004:4004"
+      - "5004:4004"
