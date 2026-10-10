@@ -135,7 +135,7 @@ Those can be added incrementally after you are satisfied with the application.
 
 ## Suggested next phase
 
-Once you like the application:
+Future Plan to Migrate to Docker and K8s
 
 1. Add Dockerfiles.
 2. Build Docker images locally.
