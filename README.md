@@ -135,7 +135,7 @@ Those can be added incrementally after you are satisfied with the application.
 
 ## Suggested next phase
 
-Future Plan to Migrate to Docker and K8s
+Next Phase Plan to Migrate on Docker and K8s Platform
 
 1. Add Dockerfiles.
 2. Build Docker images locally.
