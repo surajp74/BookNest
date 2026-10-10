@@ -39,14 +39,21 @@ export default function Books({ onCartChanged }: BooksProps) {
   };
 
   useEffect(() => {
-    void load(params.get("search") || "", params.get("category") || "");
-    // Load only when the page is first mounted; search/filter handlers reload explicitly.
+    const search = params.get("search") || "";
+    const cat = params.get("category") || "";
+  
+    setQuery(search);
+    setCategory(cat);
+  
+    void load(search, cat);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+  }, [params]);
+  
   const search = () => {
-    setParams({ ...(query ? { search: query } : {}), ...(category ? { category } : {}) });
-    void load(query, category);
+    setParams({
+      ...(query ? { search: query } : {}),
+      ...(category ? { category } : {}),
+    });
   };
 
   const cartQuantity = (bookId: string) => cart.find((item) => item.bookId === bookId)?.quantity || 0;
@@ -80,9 +87,19 @@ export default function Books({ onCartChanged }: BooksProps) {
           <Search size={18} />
           <input value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} placeholder="Search title or author" />
         </div>
-        <select value={category} onChange={(e) => { setCategory(e.target.value); setParams(e.target.value ? { category: e.target.value } : {}); void load(query, e.target.value); }}>
+        <select
+          value={category}
+          onChange={(e) => {
+            const value = e.target.value;
+            setCategory(value);
+          
+            setParams(value ? { category: value } : {});
+          }}
+        >
           <option value="">All categories</option>
-          {categories.map((c) => <option key={c}>{c}</option>)}
+          {categories.map((c) => (
+            <option key={c}>{c}</option>
+          ))}
         </select>
         <button className="filter-button" onClick={search}><Filter size={17} /> Apply</button>
       </div>
